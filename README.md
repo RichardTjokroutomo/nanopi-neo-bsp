@@ -14,6 +14,8 @@ mkfs.vfat /dev/<first-partition>
 mkfs.ext4 /dev/<second-partition>
 ```
 
+I mainly use [this docs](https://linux-sunxi.org/H3_Manual_build_howto#Installing_boot0) as reference, although I used `Fdisk` since I'm more comfortable with it.
+
 ---
 
 ## Mounting the partitions
@@ -56,7 +58,16 @@ If successful, then hexdump shouldn't return all zero before `EFI`.
 
 ## Installing the kernel, device tree & extlinux.conf
 
-TODO
+zImage & device tree binary can be compiled as follows:
+
+```bash
+make sunxi_defconfig
+make zImage dtbs ARCH=arm CROSS_COMPILE=<cross-compiler-tuple>- 
+```
+
+Where the device tree (`.dts`) is placed under `arch/arm/boot/dts/allwinner`. You can either write your own `.dts` for `Nanopi Neo`, or you can just copy the `.dts` from `friendlyElec's u-boot` fork ([relevant link](https://wiki.friendlyelec.com/wiki/index.php/Building_U-boot_and_Linux_for_H5/H3/H2%2B#Compile_U-boot)). When compilation completes, the `zImage` & `.dtb` can be obtained in `arch/arm/boot` & `arch/arm/boot/dts/allwinner` respectively.
+
+`extlinux.conf` tells `u-boot` where the kernel & device tree is. It is sort of like the script for `u-boot`. I mainly use this [link](https://docs.u-boot.org/en/stable/develop/distro.html) as reference. Put this under `/boot/extlinux` directory (create a directory `extlinux` in the first partition, AKA the boot partition).
 
 ---
 
