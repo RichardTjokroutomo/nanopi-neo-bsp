@@ -73,5 +73,39 @@ Where the device tree (`.dts`) is placed under `arch/arm/boot/dts/allwinner`. Yo
 
 ## Installing root
 
-TODO
+### Stage 1: Download root
+```bash
+debootstrap --arch=armhf --foreign <distro> <ROOTFS_MOUNTPOINT>
+```
+
+`<distro>` can be `trixie` or `noble`, or any distribution version.
+
+
+### Stage 2: Setup root 
+```bash
+cp /usr/bin/qemu-arm-static <ROOTFS_MOUNTPOINT>/usr/bin/
+chroot <ROOTFS_MOUNTPOINT> /usr/bin/qemu-arm-static /bin/sh -i
+/debootstrap/debootstrap --second-stage
+```
+
+### Stage 3: Create some configs
+First setup password;
+```bash
+passwd
+```
+
+Up next, set up the hostname by modifying `/etc/hostname`.
+
+Then, setup `/etc/fstab`:
+```bash
+UUID=<ROOT_PARTITION_UUID> / ext4 defaults 0 1
+UUID=<BOOT_PARTITION_UUID> /boot vfat defaults 0 2
+```
+
+Lastly, in `/etc/inittab`:
+```bash
+T0:2345:respawn:/sbin/getty -L ttyS0 115200 vt100
+```
+
+[reference](https://linux-sunxi.org/Debootstrap)
 
